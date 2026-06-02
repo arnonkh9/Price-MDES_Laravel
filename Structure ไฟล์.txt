@@ -1,0 +1,166 @@
+D:\xampp\htdocs\price-MDES_V1\
+├── app/
+│   ├── Livewire/
+│   │   ├── Auth/
+│   │   │   └── Login.php
+│   │   ├── ProductList.php
+│   │   ├── ProductForm.php
+│   │   ├── ProductDetail.php
+│   │   ├── ComparisonList.php
+│   │   ├── ComparisonForm.php
+│   │   ├── ComparisonDetail.php
+│   │   ├── CompareView.php
+│   │   ├── CharacteristicsList.php
+│   │   ├── CharacteristicsForm.php
+│   │   ├── SpecsImportModal.php
+│   │   ├── GuidelineList.php
+│   │   ├── RecommendationList.php
+│   │   ├── UserList.php
+│   │   ├── UserProfile.php
+│   │   ├── RoleList.php
+│   │   ├── MenuPermissionMatrix.php
+│   │   ├── CategoryListPage.php
+│   │   ├── CategoryManager.php
+│   │   ├── BrandListPage.php
+│   │   ├── BrandManager.php
+│   │   ├── Dashboard.php
+│   │   └── ImportModal.php
+│   ├── Models/
+│   │   ├── User.php
+│   │   ├── Product.php
+│   │   ├── Category.php
+│   │   ├── Brand.php
+│   │   ├── Comparison.php
+│   │   ├── ComparisonVendor.php
+│   │   ├── CharacteristicsTemplate.php
+│   │   ├── ProductAttachment.php
+│   │   ├── GuidelineItem.php
+│   │   ├── RecommendationItem.php
+│   │   ├── Role.php
+│   │   └── MenuPermission.php
+│   ├── Support/
+│   │   ├── Specs.php
+│   │   ├── CompareCart.php
+│   │   └── GeneratesUUID.php
+│   ├── Http/
+│   │   └── Controllers/
+│   │       └── ExportController.php
+│   ├── Imports/
+│   │   ├── ProductsImport.php
+│   │   └── CharacteristicsImport.php
+│   └── Exports/
+│       ├── ComparisonExport.php
+│       ├── BulkComparisonsExport.php
+│       ├── CharacteristicsExport.php
+│       ├── BulkCharacteristicsExport.php
+│       └── SampleCharacteristicsExport.php
+│
+├── resources/
+│   ├── views/
+│   │   ├── layouts/
+│   │   │   ├── app.blade.php (authenticated layout)
+│   │   │   └── guest.blade.php (login layout)
+│   │   ├── components/
+│   │   │   ├── sidebar.blade.php
+│   │   │   ├── header.blade.php
+│   │   │   ├── nav-link.blade.php
+│   │   │   └── kpi-card.blade.php
+│   │   └── livewire/ (all .blade.php views matching Livewire components)
+│   └── css/
+│       └── app.css (Tailwind v4 with @theme)
+│
+├── database/
+│   ├── migrations/
+│   │   └── (schema stable — no changes needed)
+│   └── seeders/
+│       ├── ProductSeeder.php
+│       └── RolePermissionSeeder.php
+│
+├── config/
+│   ├── specs.php (category definitions, years, months, fields)
+│   └── nav.php (menu_visibility — legacy, now DB-driven)
+│
+├── routes/
+│   └── web.php (all authenticated routes)
+│
+├── .claude/
+│   ├── skills/
+│   │   ├── run-app/
+│   │   │   └── SKILL.md
+│   │   └── verifier-web/
+│   │       └── SKILL.md
+│   ├── plans/
+│   │   └── tab-delegated-squirrel.md (current plan)
+│   ├── launch.json (dev server config)
+│   └── settings.json (project config)
+│
+├── .env (environment variables)
+├── CLAUDE.md (architecture & how-to-run)
+├── spec.md (functional specification)
+├── composer.json (Laravel dependencies)
+├── package.json (Node/npm deps for Tailwind)
+└── artisan (Laravel CLI)
+
+Database Schema (11 main tables)
+users
+  ├─ id, username (unique), name, email, role (FK→roles.slug)
+  ├─ department, password, created_at, updated_at
+
+categories
+  ├─ slug (PK), label, short, color, position
+
+products
+  ├─ id (PK, string), category (FK), brand (FK)
+  ├─ model, price, price_unit, price_date, price_source, specs (jsonb)
+
+product_attachments
+  ├─ id, product_id (FK), original_name, file_path, file_size
+
+product_edit_histories
+  ├─ id, product_id (FK), date, user, action, detail, source, url
+
+spec_templates (CharacteristicsTemplate)
+  ├─ id (PK, string), name, category, purpose, budget
+  ├─ year, month, created_date, created_by, specs (jsonb)
+
+spec_template_histories
+  ├─ id, spec_template_id (FK), date, user, action, detail
+
+comparisons
+  ├─ id (PK, string), name, category, year, month
+  ├─ spec_template_id (FK nullable), notes, status (draft|final)
+  ├─ created_date, created_by
+
+comparison_vendors
+  ├─ id, comparison_id (FK), position (1-3)
+  ├─ name, brand, model, price, specs (jsonb)
+
+brands
+  ├─ id (PK, string), label, slug, position
+
+guideline_items
+  ├─ id, category, content, year, month, created_by
+
+recommendation_items
+  ├─ id, category, content, year, month, created_by
+
+roles
+  ├─ slug (PK), name, description, level (admin|editor|viewer)
+  ├─ is_system (bool), position
+
+menu_permissions
+  ├─ id, role_slug (FK→roles.slug, cascade)
+  ├─ menu_key, can_see (bool)
+  └─ UNIQUE(role_slug, menu_key)
+
+Key Directories & Their Purpose
+ Directory	Purpose
+ app/Livewire/	Full-page Livewire 3 components (all pages)
+ app/Models/	Eloquent models matching database tables
+ resources/views/	Blade templates for components & layouts
+ database/migrations/	Schema (stable — no edits needed)
+ database/seeders/	Data seeders (ProductSeeder, RolePermissionSeeder)
+ config/specs.php	Business logic: categories, years, months, field groups
+ .claude/skills/	Custom skills for development (run-app, verifier-web)
+ .claude/plans/	Current work plan file
+

@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(php artisan *)",
+      "mcp__Claude_in_Chrome__navigate",
+      "mcp__Claude_in_Chrome__computer",
+      "mcp__Claude_in_Chrome__browser_batch",
+      "Bash(cd \"D:\\\\\\\\Antigravity\\\\\\\\Price-MDES_Laravel\")",
+      "mcp__Claude_in_Chrome__read_page"
+    ]
+  }
+}

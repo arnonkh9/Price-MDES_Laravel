@@ -1,0 +1,97 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: 'Sarabun', ui-sans-serif, system-ui, sans-serif;
+
+    /* Brand / design tokens (from prototype) */
+    --color-navy: #1B3A6B;
+    --color-navy-600: #1e4d99;
+    --color-sidebar: #1a1a1a;
+    --color-canvas: #F0F4F8;
+    --color-ink: #1E293B;
+    --color-muted: #64748B;
+    --color-faint: #94A3B8;
+    --color-line: #E2E8F0;
+    --color-line-soft: #F1F5F9;
+    --color-price: #059669;
+    --color-spec: #7C3AED;
+
+    /* Surface tokens */
+    --color-surface:        #ffffff;
+    --color-surface-alt:    #F8FAFC;
+    --color-surface-raised: #ffffff;
+
+    /* Category colors */
+    --color-cat-notebook: #2563EB;
+    --color-cat-aio: #7C3AED;
+    --color-cat-aicom: #DB2777;
+    --color-cat-pc: #059669;
+    --color-cat-gaming: #DC2626;
+    --color-cat-mini: #EA580C;
+    --color-cat-server: #0369A1;
+}
+
+/* ── Dark mode token overrides ── */
+.dark {
+    --color-canvas:         #0F172A;
+    --color-ink:            #E2E8F0;
+    --color-muted:          #94A3B8;
+    --color-faint:          #64748B;
+    --color-line:           #334155;
+    --color-line-soft:      #1E293B;
+    --color-surface:        #1E293B;
+    --color-surface-alt:    #0F172A;
+    --color-surface-raised: #243047;
+    --color-price:          #34D399;
+    --color-sidebar:        #1a1a1a;
+}
+
+/* ── Light mode sidebar color (keep dark for readability) ── */
+:root:not(.dark) {
+    --color-sidebar:        #1a1a1a;
+}
+.dark ::-webkit-scrollbar-thumb { background: #475569; }
+
+body {
+    background: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: 'Sarabun', sans-serif;
+}
+
+/* Scrollbar (match prototype) */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+
+@keyframes slideUp {
+    from { transform: translateY(16px); opacity: 0; }
+    to   { transform: translateY(0);    opacity: 1; }
+}
+.animate-slide-up { animation: slideUp 0.25s ease; }
+
+input:focus, textarea:focus, select:focus {
+    outline: 2px solid var(--color-navy);
+    outline-offset: 1px;
+    border-color: var(--color-navy) !important;
+}
+button:active { transform: scale(0.97); }
+
+/* ── Print styles ── */
+@media print {
+    .no-print { display: none !important; }
+    body { background: white; }
+    .print-full { margin-left: 0 !important; margin-top: 0 !important; }
+    @page { margin: 20mm; }
+    table { page-break-inside: auto; }
+    tr    { page-break-inside: avoid; }
+    .modal-overlay { position: static !important; background: none !important; padding: 0 !important; }
+    .modal-overlay .modal-card { box-shadow: none !important; max-height: none !important; width: 100% !important; }
+}
