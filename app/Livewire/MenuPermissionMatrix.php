@@ -28,6 +28,7 @@ class MenuPermissionMatrix extends Component
         'specs'           => 'คุณลักษณะพื้นฐาน',
         'comparisons'     => 'เปรียบเทียบราคา',
         'compare'         => 'เปรียบเทียบสินค้า',
+        'reports'         => 'รายงาน',
         'guidelines'      => 'แนวทางการพิจารณา',
         'recommendations' => 'ข้อแนะนำประกอบ',
         'users'           => 'จัดการผู้ใช้',

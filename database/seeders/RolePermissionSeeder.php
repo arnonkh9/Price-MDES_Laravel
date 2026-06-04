@@ -14,6 +14,7 @@ class RolePermissionSeeder extends Seeder
         'specs',
         'comparisons',
         'compare',
+        'reports',
         'guidelines',
         'recommendations',
         'users',
@@ -41,11 +42,11 @@ class RolePermissionSeeder extends Seeder
         ],
         'editor' => [
             'full'      => ['products', 'specs', 'comparisons', 'guidelines', 'recommendations'],
-            'view_only' => ['compare'],
+            'view_only' => ['compare', 'reports'],
             'none'      => ['users', 'categories', 'brands', 'roles', 'permissions'],
         ],
         'viewer' => [
-            'view_only' => ['products', 'specs', 'comparisons', 'compare', 'guidelines', 'recommendations'],
+            'view_only' => ['products', 'specs', 'comparisons', 'compare', 'reports', 'guidelines', 'recommendations'],
             'none'      => ['users', 'categories', 'brands', 'roles', 'permissions'],
         ],
     ];

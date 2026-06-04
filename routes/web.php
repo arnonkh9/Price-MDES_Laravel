@@ -6,6 +6,8 @@ use App\Livewire\CompareView;
 use App\Livewire\ComparisonList;
 use App\Livewire\Dashboard;
 use App\Livewire\ProductList;
+use App\Livewire\ReportPage;
+use App\Http\Controllers\ReportExportController;
 use App\Livewire\CharacteristicsList;
 use App\Livewire\GuidelineList;
 use App\Livewire\RecommendationList;
@@ -50,6 +52,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/permissions', MenuPermissionMatrix::class)->name('permissions');
     Route::get('/audit-log', AuditLogPage::class)->name('audit-log');
     Route::get('/search', SearchPage::class)->name('search');
+    Route::get('/reports', ReportPage::class)->name('reports');
+    Route::get('/reports/export/pdf', [ReportExportController::class, 'pdf'])->name('reports.export.pdf');
+    Route::get('/reports/export/excel', [ReportExportController::class, 'excel'])->name('reports.export.excel');
 
     Route::get('/products/export', [ExportController::class, 'products'])->name('products.export');
     Route::get('/products/sample', [ExportController::class, 'sampleProductsTemplate'])->name('products.sample');
