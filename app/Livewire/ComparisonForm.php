@@ -87,7 +87,22 @@ class ComparisonForm extends Component
             $this->created_date = '2569-05-21';
             $this->vendors = array_fill(0, 3, ['product_id' => '', 'name' => '', 'brand' => '', 'model' => '', 'price' => '', 'specs' => []]);
         }
+        // Populate the characteristics dropdown for the loaded category so that
+        // editing an existing comparison shows (and lets the user change) the
+        // reference spec template instead of a disabled/empty dropdown.
+        $this->loadFilteredCharacteristics();
         $this->show = true;
+    }
+
+    /** Load characteristics templates for the current category (used by open() + updatedCategory()). */
+    private function loadFilteredCharacteristics(): void
+    {
+        $this->filteredCharacteristics = $this->category
+            ? CharacteristicsTemplate::where('category', $this->category)
+                ->orderBy('name')
+                ->get(['id', 'name'])
+                ->toArray()
+            : [];
     }
 
     public function close()
@@ -193,14 +208,7 @@ class ComparisonForm extends Component
     /** When category changes, filter characteristics by category */
     public function updatedCategory(): void
     {
-        if ($this->category) {
-            $this->filteredCharacteristics = CharacteristicsTemplate::where('category', $this->category)
-                ->orderBy('name')
-                ->get(['id', 'name'])
-                ->toArray();
-        } else {
-            $this->filteredCharacteristics = [];
-        }
+        $this->loadFilteredCharacteristics();
         // Reset selected characteristic when category changes
         $this->specTemplateId = null;
     }

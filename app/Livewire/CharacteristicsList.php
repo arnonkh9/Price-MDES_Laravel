@@ -98,11 +98,12 @@ class CharacteristicsList extends Component
 
     public function toggleSelectAll(): void
     {
-        if (count($this->selectedIds) >= count($this->currentCharacteristicIds)) {
-            $this->selectedIds = [];
-        } else {
-            $this->selectedIds = $this->currentCharacteristicIds;
-        }
+        // Match the $allSelected logic in render() (diff-based, not count-based)
+        // so the header checkbox state and this toggle stay consistent even when
+        // selectedIds contains items outside the current filter.
+        $allSelected = ! empty($this->currentCharacteristicIds)
+            && empty(array_diff($this->currentCharacteristicIds, $this->selectedIds));
+        $this->selectedIds = $allSelected ? [] : $this->currentCharacteristicIds;
     }
 
     public function toggleSelectItem(string $id): void

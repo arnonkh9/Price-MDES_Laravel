@@ -48,11 +48,12 @@ class ComparisonList extends Component
 
     public function toggleSelectAll(): void
     {
-        if (count($this->selectedIds) >= count($this->currentComparisonIds)) {
-            $this->selectedIds = [];
-        } else {
-            $this->selectedIds = $this->currentComparisonIds;
-        }
+        // Match the $allSelected logic in render() (diff-based, not count-based)
+        // so the header checkbox state and this toggle stay consistent even when
+        // selectedIds contains items outside the current filter.
+        $allSelected = ! empty($this->currentComparisonIds)
+            && empty(array_diff($this->currentComparisonIds, $this->selectedIds));
+        $this->selectedIds = $allSelected ? [] : $this->currentComparisonIds;
     }
 
     public function toggleSelectItem(string $id): void

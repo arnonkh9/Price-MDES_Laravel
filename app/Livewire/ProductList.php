@@ -90,11 +90,12 @@ class ProductList extends Component
 
     public function toggleSelectAll(): void
     {
-        if (count($this->selectedIds) >= count($this->currentProductIds)) {
-            $this->selectedIds = [];
-        } else {
-            $this->selectedIds = $this->currentProductIds;
-        }
+        // Match the $allSelected logic in render() (diff-based, not count-based)
+        // so the header checkbox state and this toggle stay consistent even when
+        // selectedIds contains items outside the current filter.
+        $allSelected = ! empty($this->currentProductIds)
+            && empty(array_diff($this->currentProductIds, $this->selectedIds));
+        $this->selectedIds = $allSelected ? [] : $this->currentProductIds;
     }
 
     public function bulkDelete(): void
