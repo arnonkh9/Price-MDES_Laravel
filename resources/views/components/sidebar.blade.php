@@ -118,7 +118,7 @@
             </x-nav-link>
         @endif
 
-        @if ($cartActive)
+        @if ($cartActive && auth()->user()->canSeeMenu('compare'))
             <div x-show="!sidebarCollapsed" class="text-white/35 text-[10px] font-bold tracking-[0.1em] uppercase px-2 pt-3.5 pb-[5px]">เปรียบเทียบ</div>
             <div x-show="sidebarCollapsed" class="pt-2"></div>
             <x-nav-link :href="route('compare')" :active="request()->routeIs('compare')" :badge="$compareCount ?: null" badgeColor="#EF4444">

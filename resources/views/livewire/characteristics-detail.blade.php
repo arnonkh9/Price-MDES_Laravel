@@ -26,10 +26,12 @@
                             แก้ไข
                         </button>
                     @endif
+                    @if ($canCompare)
                     <button wire:click="useCompare" class="flex items-center gap-1.5 px-3.5 py-2 border-none text-white rounded-lg text-[13px] font-bold" style="background:{{ $color }}">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                         ใช้เปรียบเทียบ
                     </button>
+                    @endif
                     <button wire:click="close" class="p-2 border-[1.5px] border-line bg-surface rounded-lg text-muted flex">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>

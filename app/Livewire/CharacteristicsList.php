@@ -81,6 +81,7 @@ class CharacteristicsList extends Component
 
     public function useCompare(string $id)
     {
+        abort_unless(auth()->user()->hasPermission('compare', 'view'), 403);
         CompareCart::setBaseSpec($id);
         $this->dispatch('toast', message: 'ตั้งเป็นสเปคอ้างอิงแล้ว');
         $this->redirect(route('compare'), navigate: true);
@@ -231,6 +232,7 @@ class CharacteristicsList extends Component
             'canDelete'       => $user->hasPermission('specs', 'delete'),
             'canImport'       => $user->hasPermission('specs', 'import'),
             'canExport'       => $user->hasPermission('specs', 'export'),
+            'canCompare'      => $user->hasPermission('compare', 'view'),
         ]);
     }
 }

@@ -25,7 +25,7 @@ class CharacteristicsDetail extends Component
     public function close()
     {
         $this->show = false;
-        $this->specId = null;
+        $this->characteristicsId = null;
     }
 
     public function editCharacteristics()
@@ -37,7 +37,8 @@ class CharacteristicsDetail extends Component
 
     public function useCompare()
     {
-        CompareCart::setBaseSpec($this->specId);
+        abort_unless(auth()->user()->hasPermission('compare', 'view'), 403);
+        CompareCart::setBaseSpec($this->characteristicsId);
         $this->redirect(route('compare'), navigate: true);
     }
 
@@ -50,6 +51,7 @@ class CharacteristicsDetail extends Component
             'groups' => Specs::groups(),
             'color' => $spec ? Specs::color($spec->category) : '#64748B',
             'catLabel' => $spec ? Specs::label($spec->category) : '',
+            'canCompare' => auth()->user()->hasPermission('compare', 'view'),
         ]);
     }
 }

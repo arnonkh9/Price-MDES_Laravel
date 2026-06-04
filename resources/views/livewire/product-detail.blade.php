@@ -32,12 +32,14 @@
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
                         พิมพ์
                     </button>
+                    @if ($canCompare)
                     <button wire:click="toggleCompare" @disabled(! $inCompare && $compareCount >= 3)
                         class="flex items-center gap-1.5 px-[13px] py-[7px] border-[1.5px] rounded-lg text-[13px] font-semibold disabled:opacity-50"
                         style="{{ $inCompare ? 'color:white;background:#1D4ED8;border-color:#1D4ED8' : 'color:#1D4ED8;background:#EFF6FF;border-color:#BFDBFE' }}">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                         {{ $inCompare ? 'ยกเลิกเปรียบเทียบ' : 'เปรียบเทียบ' }}
                     </button>
+                    @endif
                     <button wire:click="close" class="p-2 border-[1.5px] border-line bg-surface rounded-lg text-muted flex">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
                     </button>

@@ -15,7 +15,7 @@
             </p>
         </div>
         <div class="flex items-center gap-2.5">
-            @if (count($compareIds) > 0)
+            @if ($canCompare && count($compareIds) > 0)
                 <a href="{{ route('compare') }}" wire:navigate class="flex items-center gap-1.5 bg-[#EFF6FF] text-[#2563EB] text-xs font-bold px-3 py-1.5 rounded-lg">
                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                     เลือกเปรียบเทียบ {{ count($compareIds) }}/3 รายการ
@@ -166,6 +166,7 @@
                             <td class="px-3.5 py-[11px]">
                                 <div class="flex gap-[5px] justify-center">
                                     {{-- Compare button --}}
+                                    @if ($canCompare)
                                     <button wire:click="toggleCompare('{{ $p->id }}')"
                                         title="{{ $inCompare ? 'ยกเลิกเปรียบเทียบ' : 'เพิ่มเปรียบเทียบ' }}"
                                         class="p-2 md:p-1.5 border-[1.5px] rounded-[7px] flex transition-colors
@@ -173,6 +174,7 @@
                                         @disabled(! $inCompare && count($compareIds) >= 3)>
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                                     </button>
+                                    @endif
                                     {{-- View button --}}
                                     <button wire:click="$dispatch('open-product-detail', { id: '{{ $p->id }}' })" title="ดูรายละเอียด" class="p-2 md:p-1.5 border-[1.5px] border-line rounded-[7px] bg-surface text-[#2563EB] flex hover:bg-[#2563EB12]">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
@@ -220,7 +222,8 @@
                                 <div class="text-base font-extrabold text-price">{{ $fmt($p->price) }}</div>
                             </div>
                             <div class="flex gap-[5px]" wire:click.stop>
-                                {{-- Compare button (ทุก role) --}}
+                                {{-- Compare button --}}
+                                @if ($canCompare)
                                 <button wire:click="toggleCompare('{{ $p->id }}')"
                                     title="{{ $inCompare ? 'ยกเลิกเปรียบเทียบ' : 'เพิ่มเปรียบเทียบ' }}"
                                     class="p-1.5 border-[1.5px] rounded-[7px] bg-surface flex transition-colors
@@ -228,6 +231,7 @@
                                     @disabled(!$inCompare && count($compareIds) >= 3)>
                                     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                                 </button>
+                                @endif
                                 @if ($canEdit)
                                     <button wire:click="$dispatch('open-product-form', { id: '{{ $p->id }}' })" title="แก้ไข" class="p-1.5 border-[1.5px] border-line rounded-[7px] bg-surface text-[#D97706] flex">
                                         <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>

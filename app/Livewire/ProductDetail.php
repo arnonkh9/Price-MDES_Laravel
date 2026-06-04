@@ -38,6 +38,7 @@ class ProductDetail extends Component
 
     public function toggleCompare()
     {
+        abort_unless(auth()->user()->hasPermission('compare', 'view'), 403);
         if (! $this->productId) {
             return;
         }
@@ -96,6 +97,7 @@ class ProductDetail extends Component
             'catLabel' => $product ? Specs::label($product->category) : '',
             'inCompare' => $product ? CompareCart::has($product->id) : false,
             'compareCount' => CompareCart::count(),
+            'canCompare' => auth()->user()->hasPermission('compare', 'view'),
             'sources' => Specs::historySources(),
         ]);
     }

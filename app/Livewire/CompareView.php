@@ -14,6 +14,11 @@ use Livewire\Component;
 #[Title('เปรียบเทียบสินค้า | ระบบราคากลาง')]
 class CompareView extends Component
 {
+    public function mount(): void
+    {
+        abort_unless(auth()->user()->canSeeMenu('compare'), 403);
+    }
+
     public function setBaseSpec(string $id)
     {
         CompareCart::setBaseSpec($id);

@@ -318,12 +318,14 @@
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                                     </button>
                                     {{-- Use compare --}}
+                                    @if ($canCompare)
                                     <button wire:click="useCompare('{{ $s->id }}')"
                                             title="ใช้เปรียบเทียบ"
                                             class="p-1.5 border-none rounded-[7px] text-white flex hover:opacity-80"
                                             style="background:{{ $color }}">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                                     </button>
+                                    @endif
                                     {{-- Export --}}
                                     @if ($canExport)
                                         <a href="{{ route('specs.export', $s->id) }}"
@@ -417,12 +419,14 @@
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
                         </button>
                                    
+                        @if ($canCompare)
                         <button wire:click="useCompare('{{ $s->id }}')"
                                             title="ใช้เปรียบเทียบ"
                                             class="p-1.5 border-none rounded-[7px] text-white flex hover:opacity-80"
                                             style="background:{{ $color }}">
                                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
                         </button>
+                        @endif
 
                         @if ($canExport)
 

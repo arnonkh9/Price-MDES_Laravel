@@ -116,6 +116,7 @@ class ProductList extends Component
 
     public function toggleCompare(string $id)
     {
+        abort_unless(auth()->user()->hasPermission('compare', 'view'), 403);
         $result = CompareCart::toggle($id);
         $this->compareCount = CompareCart::count();
         if ($result === 'full') {
@@ -207,6 +208,7 @@ class ProductList extends Component
             'canDelete'       => $user->hasPermission('products', 'delete'),
             'canImport'       => $user->hasPermission('products', 'import'),
             'canExport'       => $user->hasPermission('products', 'export'),
+            'canCompare'      => $user->hasPermission('compare', 'view'),
         ]);
     }
 }
