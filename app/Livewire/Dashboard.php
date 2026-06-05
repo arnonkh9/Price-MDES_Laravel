@@ -44,6 +44,14 @@ class Dashboard extends Component
         $catCount = collect($byCategory)->filter(fn ($s) => $s['count'] > 0)->count();
         $editCount = ProductEditHistory::count();
 
+        // ---- Real "this month" deltas (for KPI trend rows) ----
+        $startOfMonth      = now()->startOfMonth();
+        $productsThisMonth = Product::where('created_at', '>=', $startOfMonth)->count();
+        $editsThisMonth    = ProductEditHistory::where('created_at', '>=', $startOfMonth)->count();
+        $total             = $products->count();
+        $productsPct       = $total ? round($productsThisMonth / $total * 100) : 0;
+        $editsPct          = $editCount ? round($editsThisMonth / $editCount * 100) : 0;
+
         // ---- recent products ----
         $recent = $products->sortByDesc(fn ($p) => optional($p->histories->last())->date ?? '')
             ->take(6)->values();
@@ -73,12 +81,12 @@ class Dashboard extends Component
             'datasets' => [[
                 'label'           => 'ราคากลางเฉลี่ย (บาท)',
                 'data'            => array_values($trend),
-                'borderColor'     => '#2563EB',
-                'backgroundColor' => '#2563EB22',
+                'borderColor'     => '#0D9488',
+                'backgroundColor' => '#0D948822',
                 'fill'            => true,
                 'tension'         => 0.4,
                 'pointRadius'     => 5,
-                'pointBackgroundColor' => '#2563EB',
+                'pointBackgroundColor' => '#0D9488',
             ]],
         ];
 
@@ -111,11 +119,15 @@ class Dashboard extends Component
             'categories'     => $categories,
             'colors'         => $colors,
             'stats'          => $byCategory,
-            'total'          => $products->count(),
+            'total'          => $total,
             'avg'            => $avg,
             'maxPrice'       => $maxPrice,
             'catCount'       => $catCount,
             'editCount'      => $editCount,
+            'productsThisMonth' => $productsThisMonth,
+            'editsThisMonth'    => $editsThisMonth,
+            'productsPct'       => $productsPct,
+            'editsPct'          => $editsPct,
             'recent'         => $recent,
             'barChartData'   => $barChartData,
             'trendChartData' => $trendChartData,

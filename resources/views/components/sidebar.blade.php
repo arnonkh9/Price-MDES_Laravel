@@ -17,39 +17,51 @@
     $isList = request()->routeIs('products');
 @endphp
 
-<div class="no-print h-screen flex flex-col fixed left-0 top-0 overflow-y-auto z-[100] -translate-x-full md:translate-x-0 transition-[width,transform] duration-200 overflow-x-hidden"
+<div class="no-print h-screen flex flex-col fixed left-0 top-0 overflow-y-auto z-[100] -translate-x-full md:translate-x-0 transition-[width,transform] duration-200 overflow-x-hidden border-r border-line"
      style="background-color: var(--color-sidebar);"
      :class="[{ 'translate-x-0': sidebarOpen }, sidebarCollapsed ? 'w-[64px]' : 'w-[240px]']">
     {{-- Brand --}}
-    <div class="py-5 flex items-center gap-3 border-b border-white/10 shrink-0 relative transition-[padding] duration-200"
+    <div class="py-5 flex items-center gap-3 border-b border-line shrink-0 relative transition-[padding] duration-200"
          :class="sidebarCollapsed ? 'px-0 justify-center' : 'px-[18px]'">
         <svg width="34" height="34" viewBox="0 0 48 48" fill="none" class="shrink-0">
-            <rect width="48" height="48" rx="11" fill="white" fill-opacity="0.12"/>
-            <path d="M10 30 L16 18 L22 26 L28 14 L34 22 L38 18" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-            <circle cx="38" cy="18" r="3" fill="#60A5FA"/>
+            <rect width="48" height="48" rx="11" fill="#0D9488" fill-opacity="0.12"/>
+            <path d="M10 30 L16 18 L22 26 L28 14 L34 22 L38 18" stroke="#0D9488" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            <circle cx="38" cy="18" r="3" fill="#14B8A6"/>
         </svg>
         <div x-show="!sidebarCollapsed" x-transition:enter="transition-opacity duration-150" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100">
-            <div class="text-white font-extrabold text-sm leading-tight whitespace-nowrap">Price Reference</div>
-            <div class="text-white/40 text-[10px] mt-0.5 whitespace-nowrap">Price Reference System</div>
+            <div class="text-ink font-extrabold text-sm leading-tight whitespace-nowrap">Price Reference</div>
+            <div class="text-faint text-[10px] mt-0.5 whitespace-nowrap">Price Reference System</div>
         </div>
 
     </div>
+
+    {{-- User profile card --}}
+    @php $u = auth()->user(); @endphp
+    <a href="{{ route('profile') }}" wire:navigate
+       class="shrink-0 flex items-center gap-2.5 mx-2.5 mt-3 rounded-xl border border-line bg-surface-alt hover:bg-surface transition cursor-pointer"
+       :class="sidebarCollapsed ? 'justify-center px-0 py-2' : 'px-2.5 py-2.5'">
+        <div class="w-9 h-9 rounded-full bg-navy text-white flex items-center justify-center font-extrabold text-sm shrink-0">{{ mb_substr($u->name, 0, 1) }}</div>
+        <div x-show="!sidebarCollapsed" class="flex-1 min-w-0">
+            <div class="text-[13px] font-bold text-ink leading-tight truncate">{{ $u->name }}</div>
+            <div class="text-[11px] text-muted truncate">{{ $u->roleName() }}</div>
+        </div>
+        <svg x-show="!sidebarCollapsed" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" class="text-faint shrink-0"><polyline points="9 18 15 12 9 6"/></svg>
+    </a>
 
     <nav class="px-2.5 py-2.5 flex-1">
 
          {{-- Desktop collapse toggle button --}}
         <button @click="toggleSidebar()" title="พับ/ขยายเมนู"
                 class="hidden md:flex absolute -right-3 top-1/2 -translate-y-1/2
-                       w-6 h-6 rounded-full items-center justify-center transition z-10 shrink-0"
-                style="background:rgba(255,255,255,0.15)">
-            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"
+                       w-6 h-6 rounded-full items-center justify-center transition z-10 shrink-0 bg-surface border border-line text-muted shadow-sm hover:text-ink">
+            <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
                  :class="sidebarCollapsed ? 'rotate-180' : ''" class="transition-transform duration-200">
                 <polyline points="15 18 9 12 15 6"/>
             </svg>
         </button>
          {{-- Desktop collapse toggle button --}}
          
-        <div x-show="!sidebarCollapsed" class="text-white/35 text-[12px] font-bold tracking-[0.1em] uppercase px-2 pt-3.5 pb-[5px]">เมนูหลัก</div>
+        <div x-show="!sidebarCollapsed" class="text-faint text-[12px] font-bold tracking-[0.1em] uppercase px-2 pt-3.5 pb-[5px]">เมนูหลัก</div>
         <div x-show="sidebarCollapsed" class="pt-3.5 pb-[5px]"></div>
 
         <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
@@ -91,7 +103,7 @@
         </div>
 
         @if (auth()->user()->canSeeMenu('specs') || auth()->user()->canSeeMenu('comparisons') || auth()->user()->canSeeMenu('guidelines') || auth()->user()->canSeeMenu('recommendations'))
-            <div x-show="!sidebarCollapsed" class="text-white/35 text-[12px] font-bold tracking-[0.1em] uppercase px-2 pt-3.5 pb-[5px]">คุณลักษณะพื้นฐาน</div>
+            <div x-show="!sidebarCollapsed" class="text-faint text-[12px] font-bold tracking-[0.1em] uppercase px-2 pt-3.5 pb-[5px]">คุณลักษณะพื้นฐาน</div>
             <div x-show="sidebarCollapsed" class="pt-2"></div>
         @endif
         @if (auth()->user()->canSeeMenu('specs'))
@@ -125,7 +137,7 @@
         @endif
 
         @if ($cartActive && auth()->user()->canSeeMenu('compare'))
-            <div x-show="!sidebarCollapsed" class="text-white/35 text-[10px] font-bold tracking-[0.1em] uppercase px-2 pt-3.5 pb-[5px]">เปรียบเทียบ</div>
+            <div x-show="!sidebarCollapsed" class="text-faint text-[10px] font-bold tracking-[0.1em] uppercase px-2 pt-3.5 pb-[5px]">เปรียบเทียบ</div>
             <div x-show="sidebarCollapsed" class="pt-2"></div>
             <x-nav-link :href="route('compare')" :active="request()->routeIs('compare')" :badge="$compareCount ?: null" badgeColor="#EF4444">
                 <x-slot:icon><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></x-slot:icon>
@@ -143,7 +155,7 @@
             $hasAdminSection   = $canSeeUsers || $canSeeCategories || $canSeeBrands || $canSeeRoles || $canSeePermissions || true; // audit-log visible to all
         @endphp
         @if ($hasAdminSection)
-            <div x-show="!sidebarCollapsed" class="text-white/35 text-[12px] font-bold tracking-[0.1em] uppercase px-2 pt-3.5 pb-[5px]">จัดการระบบ</div>
+            <div x-show="!sidebarCollapsed" class="text-faint text-[12px] font-bold tracking-[0.1em] uppercase px-2 pt-3.5 pb-[5px]">จัดการระบบ</div>
             <div x-show="sidebarCollapsed" class="pt-2"></div>
             @if ($canSeeUsers)
                 <x-nav-link :href="route('users')" :active="request()->routeIs('users')">
@@ -182,9 +194,9 @@
         @endif
     </nav>
 
-    <div class="py-3.5 border-t border-white/10 flex justify-center transition-[padding] duration-200"
+    <div class="py-3.5 border-t border-line flex justify-center transition-[padding] duration-200"
          :class="sidebarCollapsed ? 'px-0' : 'px-[18px] justify-start'">
-        <div x-show="!sidebarCollapsed" class="text-white/25 text-[11px]">v1.0</div>
-        <div x-show="sidebarCollapsed" class="text-white/20 text-[11px]">•</div>
+        <div x-show="!sidebarCollapsed" class="text-faint text-[11px]">v1.0</div>
+        <div x-show="sidebarCollapsed" class="text-faint text-[11px]">•</div>
     </div>
 </div>

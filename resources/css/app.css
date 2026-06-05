@@ -10,10 +10,15 @@
 @theme {
     --font-sans: 'Sarabun', ui-sans-serif, system-ui, sans-serif;
 
-    /* Brand / design tokens (from prototype) */
-    --color-navy: #1B3A6B;
-    --color-navy-600: #1e4d99;
-    --color-sidebar: #1a1a1a;
+    /* Brand / design tokens — primary = teal (EduDash style) */
+    --color-navy: #0D9488;        /* primary (teal-600) — name kept for compatibility */
+    --color-navy-600: #0F766E;    /* primary hover (teal-700) */
+    --color-primary: #0D9488;     /* alias for new code */
+    --color-primary-600: #0F766E;
+    /* Sidebar: white in light mode */
+    --color-sidebar: #ffffff;
+    --color-sidebar-active: #0D9488;       /* active pill */
+    --color-sidebar-active-soft: #CCFBF1;  /* teal-100 tint */
     --color-canvas: #F0F4F8;
     --color-ink: #1E293B;
     --color-muted: #64748B;
@@ -50,12 +55,10 @@
     --color-surface-alt:    #0F172A;
     --color-surface-raised: #243047;
     --color-price:          #34D399;
-    --color-sidebar:        #1a1a1a;
-}
-
-/* ── Light mode sidebar color (keep dark for readability) ── */
-:root:not(.dark) {
-    --color-sidebar:        #1a1a1a;
+    /* Sidebar: dark surface in dark mode */
+    --color-sidebar:        #111827;
+    --color-sidebar-active:        #14B8A6;
+    --color-sidebar-active-soft:   rgba(20,184,166,0.18);
 }
 .dark ::-webkit-scrollbar-thumb { background: #475569; }
 
