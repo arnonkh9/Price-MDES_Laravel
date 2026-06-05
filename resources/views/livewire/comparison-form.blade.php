@@ -1,4 +1,4 @@
-@php $vColors = ['#2563EB', '#059669', '#DC2626']; @endphp
+@php $vColors = ['#2563EB', '#059669', '#DC2626', '#D97706', '#7C3AED']; @endphp
 <div>
 @if ($show)
     <div class="fixed inset-0 z-[300] flex items-center justify-center p-5 bg-slate-900/55 dark:bg-black/75">
@@ -6,7 +6,7 @@
             <div class="px-[26px] py-5 border-b border-line flex justify-between items-start">
                 <div>
                     <h2 class="text-[18px] font-extrabold text-ink mb-[3px]">{{ $editingId ? 'แก้ไขการเปรียบเทียบ' : 'สร้างการเปรียบเทียบใหม่' }}</h2>
-                    <p class="text-[13px] text-faint m-0">บันทึกข้อมูลและราคาจาก 3 เจ้า</p>
+                    <p class="text-[13px] text-faint m-0">บันทึกข้อมูลและราคาจากผู้ผลิต (3–5 ราย)</p>
                 </div>
                 <button wire:click="close" class="p-2 border-[1.5px] border-line bg-surface rounded-lg text-muted flex">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -16,13 +16,19 @@
             {{-- Tabs --}}
             <div class="flex border-b border-line px-[26px] overflow-x-auto shrink-0">
                 <button wire:click="$set('tab','info')" class="px-[18px] py-[11px] text-sm font-semibold border-b-2 whitespace-nowrap {{ $tab === 'info' ? 'text-navy border-navy' : 'text-faint border-transparent' }}">ข้อมูลทั่วไป</button>
-                @foreach ([0, 1, 2] as $i)
-                    @php $vc = $vColors[$i]; $vn = $vendors[$i]['name'] ?? ''; @endphp
+                @foreach ($vendors as $i => $v)
+                    @php $vc = $vColors[$i] ?? '#64748B'; $vn = $vendors[$i]['name'] ?? ''; @endphp
                     <button wire:click="$set('tab','v{{ $i }}')" class="px-[18px] py-[11px] text-sm font-semibold border-b-2 whitespace-nowrap {{ $tab === 'v'.$i ? 'border-current' : 'text-faint border-transparent' }}"
                         style="{{ $tab === 'v'.$i ? 'color:'.$vc : '' }}">
                         ผู้ผลิตที่ {{ $i + 1 }}@if ($vn)<span class="text-[11px] text-faint ml-1">({{ \Illuminate\Support\Str::limit($vn, 8) }})</span>@endif
                     </button>
                 @endforeach
+                @if (count($vendors) < 5)
+                    <button wire:click="addVendor" type="button" title="เพิ่มผู้ผลิต"
+                        class="px-[14px] py-[11px] text-sm font-bold text-navy whitespace-nowrap border-b-2 border-transparent hover:text-blue-700">
+                        + เพิ่มผู้ผลิต
+                    </button>
+                @endif
             </div>
 
             <div class="overflow-y-auto px-[26px] py-5 flex-1 min-w-0 h-full">
@@ -95,7 +101,17 @@
                 @else
                     @php $i = (int) substr($tab, 1); $locked = ! empty($vendors[$i]['product_id']); @endphp
                     <div wire:key="vendor-panel-{{ $i }}">
-                    <div class="text-sm font-extrabold text-navy mb-3 pb-2 border-b-[1.5px] border-[#EFF6FF]">ข้อมูลบริษัท / ผู้ขาย</div>
+                    <div class="flex items-center justify-between mb-3 pb-2 border-b-[1.5px] border-[#EFF6FF]">
+                        <span class="text-sm font-extrabold text-navy">ข้อมูลบริษัท / ผู้ขาย (ผู้ผลิตที่ {{ $i + 1 }})</span>
+                        @if (count($vendors) > 3)
+                            <button type="button" wire:click="removeVendor({{ $i }})"
+                                wire:confirm="ต้องการลบผู้ผลิตรายนี้ออกจากการเปรียบเทียบใช่ไหม?"
+                                class="flex items-center gap-1 text-[12px] font-semibold text-[#DC2626] hover:underline">
+                                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
+                                ลบผู้ผลิตนี้
+                            </button>
+                        @endif
+                    </div>
                     @php $others = collect($vendors)->forget($i)->pluck('product_id')->filter()->all(); @endphp
                     <div class="mb-3.5 bg-surface-alt border-[1.5px] border-line rounded-lg p-3">
                         <label class="block text-xs font-bold text-ink mb-[5px]">เลือกจากสินค้าในระบบ (ดึงข้อมูลอัตโนมัติ)</label>

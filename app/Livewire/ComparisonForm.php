@@ -13,6 +13,10 @@ use Livewire\Component;
 class ComparisonForm extends Component
 {
     use GeneratesUUID;
+
+    private const MIN_VENDORS = 3;
+    private const MAX_VENDORS = 5;
+
     public bool $show = false;
     public ?string $editingId = null;
     public string $tab = 'info';
@@ -32,8 +36,14 @@ class ComparisonForm extends Component
     // 3 vendors: each ['name','brand','model','price','specs'=>[]]
     public array $vendors = [];
 
-    // ค่า input "เพิ่มรายการสเปค" แยกตาม index ของ vendor (0..2)
-    public array $newSpecField = ['', '', ''];
+    // ค่า input "เพิ่มรายการสเปค" แยกตาม index ของ vendor (0..MAX-1)
+    public array $newSpecField = ['', '', '', '', ''];
+
+    /** vendor เปล่า 1 ราย */
+    private function vendorTemplate(): array
+    {
+        return ['product_id' => '', 'name' => '', 'brand' => '', 'model' => '', 'price' => '', 'specs' => []];
+    }
 
     protected function rules(): array
     {
@@ -63,7 +73,8 @@ class ComparisonForm extends Component
             $this->status = $c->status ?? 'draft';
             $this->created_date = $c->created_date ?? '2569-05-21';
             $this->vendors = [];
-            for ($i = 0; $i < 3; $i++) {
+            $count = max(self::MIN_VENDORS, $c->vendors->count());
+            for ($i = 0; $i < $count; $i++) {
                 $v = $c->vendors->firstWhere('position', $i + 1);
                 $this->vendors[$i] = [
                     // best-effort: ผูกกลับไปยังสินค้าต้นทาง (match brand+model+price)
@@ -85,7 +96,10 @@ class ComparisonForm extends Component
             $this->notes = '';
             $this->status = 'draft';
             $this->created_date = '2569-05-21';
-            $this->vendors = array_fill(0, 3, ['product_id' => '', 'name' => '', 'brand' => '', 'model' => '', 'price' => '', 'specs' => []]);
+            $this->vendors = [];
+            for ($i = 0; $i < self::MIN_VENDORS; $i++) {
+                $this->vendors[$i] = $this->vendorTemplate();
+            }
         }
         // Populate the characteristics dropdown for the loaded category so that
         // editing an existing comparison shows (and lets the user change) the
@@ -109,6 +123,35 @@ class ComparisonForm extends Component
     {
         $this->show = false;
         $this->editingId = null;
+    }
+
+    /** เพิ่มผู้ผลิตอีก 1 ราย (ไม่เกิน MAX_VENDORS) แล้วสลับไปแท็บนั้น */
+    public function addVendor(): void
+    {
+        if (count($this->vendors) >= self::MAX_VENDORS) {
+            $this->dispatch('toast', message: 'เพิ่มผู้ผลิตได้สูงสุด '.self::MAX_VENDORS.' ราย', type: 'warn');
+            return;
+        }
+        $this->vendors[] = $this->vendorTemplate();
+        $this->tab = 'v'.(count($this->vendors) - 1);
+    }
+
+    /** ลบผู้ผลิตราย index ที่ระบุ (ต้องเหลือไม่ต่ำกว่า MIN_VENDORS) */
+    public function removeVendor(int $i): void
+    {
+        if (count($this->vendors) <= self::MIN_VENDORS || ! isset($this->vendors[$i])) {
+            return;
+        }
+        unset($this->vendors[$i]);
+        $this->vendors = array_values($this->vendors);
+
+        // ถ้า tab ปัจจุบันชี้ไปยัง vendor ที่หายไป/เกินช่วง → กลับไปแท็บข้อมูลทั่วไป
+        if (str_starts_with($this->tab, 'v')) {
+            $idx = (int) substr($this->tab, 1);
+            if ($idx >= count($this->vendors)) {
+                $this->tab = 'info';
+            }
+        }
     }
 
     /**

@@ -144,20 +144,26 @@
     {{-- Comparison table --}}
     @php
         $v = $comparison->vendors->values();
-        $fmt = fn($n) => $n ? number_format((float)$n) : '-';
-        $vendor = fn($i) => $v->get($i);
+        $n = max(1, $v->count());
+        $fmt = fn($x) => $x ? number_format((float)$x) : '-';
         $prices = $v->map(fn($vd) => (float)$vd->price)->filter(fn($p) => $p > 0);
         $minPrice = $prices->min();
+
+        // ความกว้างคอลัมน์ผู้ผลิต = พื้นที่ที่เหลือหาร N
+        $labelW = 28;
+        $specW  = $spec ? 18 : 0;
+        $vendorW = round((100 - $labelW - $specW) / $n, 2);
+        $colCount = 1 + ($spec ? 1 : 0) + $n;
     @endphp
 
     <table>
         <thead>
             <tr>
-                <th style="width:28%">รายการ</th>
-                @if ($spec)<th style="width:18%; text-align:center;">คุณลักษณะพื้นฐาน</th>@endif
-                <th class="vendor-col" style="width:{{ $spec ? '18%' : '24%' }}">{{ $vendor(0)?->name ?: 'เจ้าที่ 1' }}</th>
-                <th class="vendor-col" style="width:{{ $spec ? '18%' : '24%' }}">{{ $vendor(1)?->name ?: 'เจ้าที่ 2' }}</th>
-                <th class="vendor-col" style="width:{{ $spec ? '18%' : '24%' }}">{{ $vendor(2)?->name ?: 'เจ้าที่ 3' }}</th>
+                <th style="width:{{ $labelW }}%">รายการ</th>
+                @if ($spec)<th style="width:{{ $specW }}%; text-align:center;">คุณลักษณะพื้นฐาน</th>@endif
+                @foreach ($v as $i => $vd)
+                    <th class="vendor-col" style="width:{{ $vendorW }}%">{{ $vd->name ?: 'เจ้าที่ '.($i + 1) }}</th>
+                @endforeach
             </tr>
         </thead>
         <tbody>
@@ -165,38 +171,24 @@
             <tr>
                 <td><strong>แบรนด์</strong></td>
                 @if ($spec)<td class="spec-ref">-</td>@endif
-                <td class="vendor-val">{{ $vendor(0)?->brand ?: '-' }}</td>
-                <td class="vendor-val">{{ $vendor(1)?->brand ?: '-' }}</td>
-                <td class="vendor-val">{{ $vendor(2)?->brand ?: '-' }}</td>
+                @foreach ($v as $vd)<td class="vendor-val">{{ $vd->brand ?: '-' }}</td>@endforeach
             </tr>
             <tr>
                 <td><strong>รุ่น / โมเดล</strong></td>
                 @if ($spec)<td class="spec-ref">-</td>@endif
-                <td class="vendor-val">{{ $vendor(0)?->model ?: '-' }}</td>
-                <td class="vendor-val">{{ $vendor(1)?->model ?: '-' }}</td>
-                <td class="vendor-val">{{ $vendor(2)?->model ?: '-' }}</td>
+                @foreach ($v as $vd)<td class="vendor-val">{{ $vd->model ?: '-' }}</td>@endforeach
             </tr>
             <tr class="price-row">
                 <td><strong>ราคาเสนอ (บาท)</strong></td>
                 @if ($spec)<td class="spec-ref" style="text-align:center;">วงเงิน {{ $fmt($spec->budget) }} ฿</td>@endif
-                <td class="vendor-val">
-                    {{ $fmt($vendor(0)?->price) }}
-                    @if ($vendor(0) && (float)$vendor(0)->price === (float)$minPrice && $minPrice > 0)
-                        <span class="winner"> ✓</span>
-                    @endif
-                </td>
-                <td class="vendor-val">
-                    {{ $fmt($vendor(1)?->price) }}
-                    @if ($vendor(1) && (float)$vendor(1)->price === (float)$minPrice && $minPrice > 0)
-                        <span class="winner"> ✓</span>
-                    @endif
-                </td>
-                <td class="vendor-val">
-                    {{ $fmt($vendor(2)?->price) }}
-                    @if ($vendor(2) && (float)$vendor(2)->price === (float)$minPrice && $minPrice > 0)
-                        <span class="winner"> ✓</span>
-                    @endif
-                </td>
+                @foreach ($v as $vd)
+                    <td class="vendor-val">
+                        {{ $fmt($vd->price) }}
+                        @if ((float)$vd->price === (float)$minPrice && $minPrice > 0)
+                            <span class="winner"> ✓</span>
+                        @endif
+                    </td>
+                @endforeach
             </tr>
 
             {{-- Spec rows --}}
@@ -209,15 +201,13 @@
             @endphp
             @if ($activeKeys->isNotEmpty())
                 <tr class="section-header">
-                    <td colspan="{{ $spec ? 5 : 4 }}">ข้อมูลจำเพาะ (Specifications)</td>
+                    <td colspan="{{ $colCount }}">ข้อมูลจำเพาะ (Specifications)</td>
                 </tr>
                 @foreach ($activeKeys as $field)
                 <tr>
                     <td>{{ $field }}</td>
                     @if ($spec)<td class="spec-ref" style="text-align:center;">{{ \App\Support\Specs::display($spec->specs[$field] ?? null) }}</td>@endif
-                    <td class="vendor-val">{{ \App\Support\Specs::display($vendor(0)?->specs[$field] ?? null) }}</td>
-                    <td class="vendor-val">{{ \App\Support\Specs::display($vendor(1)?->specs[$field] ?? null) }}</td>
-                    <td class="vendor-val">{{ \App\Support\Specs::display($vendor(2)?->specs[$field] ?? null) }}</td>
+                    @foreach ($v as $vd)<td class="vendor-val">{{ \App\Support\Specs::display($vd->specs[$field] ?? null) }}</td>@endforeach
                 </tr>
                 @endforeach
             @endif

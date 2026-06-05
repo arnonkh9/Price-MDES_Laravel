@@ -2,7 +2,7 @@
     use App\Support\Specs;
     $fmt = fn ($n) => $n ? number_format((float) $n).' ฿' : '—';
     $canEdit = auth()->user()->hasPermission('comparisons', 'edit');
-    $vColors = ['#2563EB', '#059669', '#DC2626'];
+    $vColors = ['#2563EB', '#059669', '#DC2626', '#D97706', '#7C3AED'];
     $statuses = ['draft' => ['label' => 'ร่าง', 'color' => '#94A3B8', 'bg' => '#F1F5F9'], 'final' => ['label' => 'สรุปแล้ว', 'color' => '#059669', 'bg' => '#F0FFF4']];
 @endphp
 <div>
@@ -14,7 +14,7 @@
                 <div class="flex-1">
                     <div class="flex gap-2.5 items-center mb-1.5">
                         <span class="text-white text-[11px] font-extrabold px-2 py-[3px] rounded-[5px]" style="background:{{ $color }}">{{ $catLabel }}</span>
-                        <span class="text-xs font-bold text-faint bg-line-soft px-2 py-[3px] rounded">เปรียบเทียบกับราคา 3 ผู้ผลิต</span>
+                        <span class="text-xs font-bold text-faint bg-line-soft px-2 py-[3px] rounded">เปรียบเทียบราคา {{ $cmp->vendors->count() }} ผู้ผลิต</span>
                         <span class="text-[11px] font-bold px-2 py-[3px] rounded" style="background:{{ $st['bg'] }};color:{{ $st['color'] }}">{{ $st['label'] }}</span>
                     </div>
                     <h2 class="text-[18px] font-extrabold text-ink mb-2">{{ $cmp->name }}</h2>

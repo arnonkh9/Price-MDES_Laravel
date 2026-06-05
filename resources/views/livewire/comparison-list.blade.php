@@ -8,7 +8,7 @@
     {{-- Toolbar --}}
     <div class="flex items-end justify-between mb-4 flex-wrap gap-3">
         <div>
-            <h2 class="text-[22px] font-extrabold text-ink mb-1">เปรียบเทียบกับราคา 3 ผู้ผลิต</h2>
+            <h2 class="text-[22px] font-extrabold text-ink mb-1">เปรียบเทียบราคาผู้ผลิต</h2>
             <p class="text-muted text-[13px] m-0">{{ $comparisons->count() }} รายการ · {{ $periodLabel }}</p>
         </div>
         <div class="flex items-center gap-2.5">
