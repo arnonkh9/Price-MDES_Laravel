@@ -31,6 +31,12 @@ class AuditLogPage extends Component
     #[Url(as: 'to')]
     public string $filterTo = '';
 
+    /** composite keys "type:id" ของแถวที่เลือก (สำหรับลบหลายรายการ) */
+    public array $selectedKeys = [];
+
+    /** composite keys ของแถวในหน้าปัจจุบัน (ใช้กับ select-all) */
+    public array $currentKeys = [];
+
     public function mount(): void
     {
         abort_unless(auth()->check(), 403);
@@ -49,7 +55,73 @@ class AuditLogPage extends Component
         $this->filterUser   = '';
         $this->filterFrom   = '';
         $this->filterTo     = '';
+        $this->selectedKeys = [];
         $this->resetPage();
+    }
+
+    /** ลบประวัติ 1 รายการ (admin เท่านั้น — เป็น audit trail) */
+    public function deleteLog(string $type, int $id): void
+    {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
+        if ($type === 'product') {
+            ProductEditHistory::whereKey($id)->delete();
+        } elseif ($type === 'spec') {
+            CharacteristicsTemplateHistory::whereKey($id)->delete();
+        }
+
+        $this->selectedKeys = array_values(array_diff($this->selectedKeys, ["{$type}:{$id}"]));
+        $this->dispatch('toast', message: 'ลบประวัติสำเร็จ');
+    }
+
+    public function toggleSelectItem(string $key): void
+    {
+        if (in_array($key, $this->selectedKeys)) {
+            $this->selectedKeys = array_values(array_diff($this->selectedKeys, [$key]));
+        } else {
+            $this->selectedKeys[] = $key;
+        }
+    }
+
+    public function toggleSelectAll(): void
+    {
+        // diff-based: ถ้าแถวในหน้านี้ถูกเลือกครบแล้ว → ล้าง, ไม่งั้น → เลือกทั้งหน้า
+        $allSelected = ! empty($this->currentKeys)
+            && empty(array_diff($this->currentKeys, $this->selectedKeys));
+        $this->selectedKeys = $allSelected ? [] : $this->currentKeys;
+    }
+
+    /** ลบประวัติหลายรายการพร้อมกัน (admin เท่านั้น) */
+    public function bulkDelete(): void
+    {
+        abort_unless(auth()->user()->isAdmin(), 403);
+
+        $productIds = [];
+        $specIds    = [];
+        foreach ($this->selectedKeys as $key) {
+            [$type, $id] = array_pad(explode(':', $key, 2), 2, null);
+            if ($type === 'product') {
+                $productIds[] = (int) $id;
+            } elseif ($type === 'spec') {
+                $specIds[] = (int) $id;
+            }
+        }
+
+        $count = count($productIds) + count($specIds);
+        if ($count === 0) {
+            return;
+        }
+
+        if ($productIds) {
+            ProductEditHistory::whereIn('id', $productIds)->delete();
+        }
+        if ($specIds) {
+            CharacteristicsTemplateHistory::whereIn('id', $specIds)->delete();
+        }
+
+        $this->selectedKeys = [];
+        $this->resetPage();
+        $this->dispatch('toast', message: "ลบประวัติสำเร็จ {$count} รายการ");
     }
 
     public function render()
@@ -92,9 +164,17 @@ class AuditLogPage extends Component
                 ->paginate(20);
         }
 
+        // Composite keys ของแถวในหน้าปัจจุบัน (สำหรับ select-all)
+        $this->currentKeys = collect($logs->items())
+            ->map(fn ($r) => $r->type . ':' . $r->id)
+            ->all();
+        $allSelected = count($this->currentKeys) > 0
+            && empty(array_diff($this->currentKeys, $this->selectedKeys));
+
         return view('livewire.audit-log-page', [
-            'logs'    => $logs,
-            'isAdmin' => $isAdmin,
+            'logs'        => $logs,
+            'isAdmin'     => $isAdmin,
+            'allSelected' => $allSelected,
         ]);
     }
 }
